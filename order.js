@@ -1,116 +1,10 @@
+//THIS IS THE CLASS WE USED IN OUR PROGRAM
 
-const inventory = require('./data')
-
-
-
-//calculate the total inventory in our warehouses
-// I know its messy, can be improved in future 
-let totalMasInventory = inventory[0].maskQty + inventory[1].maskQty
-let totalGloveInventory = inventory[0].glovesQty + inventory[1].glovesQty
-let maskUK = inventory[0].maskQty
-let gloveUk = inventory[0].glovesQty
-let maskGB = inventory[1].maskQty
-let gloveGB = inventory[1].glovesQty
-let gloveUKprice = inventory[0].glovePrice
-let maskUKprice = inventory[0].maskPrice
-let gloveGBprice = inventory[1].glovePrice
-let maskGBprice = inventory[1].maskPrice
-
-
-const UKWareHouse = {
-  mask: {
-    price: maskUKprice,
-    qty: maskUK
-  },
-  glove: {
-    price: gloveUKprice,
-    qty: gloveUk
-  }
-}
-
-const germanWarehouse = {
-  mask: {
-    price: maskGBprice,
-    qty: maskGB
-  },
-  glove: {
-    price: gloveGBprice,
-    qty: gloveGB
-  }
-
-}
-
-let shipping
-let discount
-let warehouseCountry
-let passport
-let GlovesQty
-let maskQty
+//I TRIED TO EXPORT IT BUT REALISED IT REQUIRED SOME GLOBAL VARIABLES 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-//the total input if user included passport is 6
-//if user excluded passport the total input is 5
-
-
-//fetch the user input from the terminal
-const input = process.argv[2]
-console.log(input)
-
-//processing user input
-const data = input.split(':')
-warehouseCountry = data[0] //store country
-
-//user has also entered passport details
-if (data.length === 6) {
-  if (data[1].startsWith('A')) {
-    passport = 'Germany'
-  } else if (data[1].startsWith('B')) {
-    passport = 'UK'
-  } else {
-    passport = 'INTERNATIONAL'
-  }
-  GlovesQty = data[3]
-  maskQty = data[5]
-} else if (data.length === 5) {
-  passport = 'INTERNATIONAL'
-  GlovesQty = data[2]
-  maskQty = data[4]
-} else {
-  return console.log('The entered format seems incorrect')
-}
-
-
-console.log('user entered details')
-console.log(warehouseCountry, passport, GlovesQty, maskQty)
-
-if (!warehouseCountry || !GlovesQty || !maskQty) {
-  console.log('Sorry you entered in a wrong format. refer manual for instructrions')
-  return
-}
-
-
-
-
-
-
-
-
-
-//class to calulate everything
 class createOrder {
   constructor(warehouseCountry, purchaserCountry, gloveOrder, maskOrder, glovesInvt, maskInvt) {
     this.warehouseCountry = warehouseCountry
@@ -120,6 +14,7 @@ class createOrder {
     this.totalAmount = 0
     this.glovesInvt = glovesInvt
     this.maskInvent = maskInvt
+    this.local = true
 
     this.shippingCost = null
 
@@ -250,20 +145,4 @@ class createOrder {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-const order = new createOrder(warehouseCountry, passport, GlovesQty, maskQty, totalGloveInventory, totalMasInventory)
-order.calculateshipping()
-
-order.checkInventory()
-
-
+module.exports = createOrder
