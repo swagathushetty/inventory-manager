@@ -1,0 +1,12 @@
+{
+  "name": "inventory-manager",
+  "version": "1.0.0",
+  "description": "Calculates the total price for orders",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "swagath shetty",
+  "license": "ISC"
+}
