@@ -20,7 +20,7 @@ let maskQty
 
 //fetch the user input from the terminal
 const input = process.argv[2]
-console.log(input)
+// console.log(input)
 
 //processing user input
 const data = input.split(':')
@@ -45,9 +45,15 @@ if (data.length === 6) {
   return console.log('The entered format seems incorrect')
 }
 
+//the stores that we can purchase from
+const stores = ['UK', 'Germany']
 
-console.log('user entered details')
-console.log(warehouseCountry, passport, GlovesQty, maskQty)
+//if we try to purchase from a store that doesnt exist give error
+if (!stores.includes(warehouseCountry)) {
+  return console.log('cannot place order from store that doesnt exist')
+}
+
+// console.log(warehouseCountry, passport, GlovesQty, maskQty)
 
 if (!warehouseCountry || !GlovesQty || !maskQty) {
   console.log('Sorry you entered in a wrong format. refer manual for instructrions')
@@ -57,7 +63,7 @@ if (!warehouseCountry || !GlovesQty || !maskQty) {
 
 
 
-
+//create order and display to user
 const order = new createOrder(warehouseCountry, passport, GlovesQty, maskQty, totalGloveInventory, totalMasInventory)
 order.calculateshipping()
 

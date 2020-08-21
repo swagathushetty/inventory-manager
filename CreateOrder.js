@@ -14,6 +14,9 @@ let gloveGBprice = inventory[1].glovePrice
 let maskGBprice = inventory[1].maskPrice
 
 
+
+//these two objects will act as pointers 
+//since JS doesnt allow pointers I used Call be Reference to create a link 
 const UKWareHouse = {
   mask: {
     price: maskUKprice,
@@ -56,6 +59,8 @@ class CreateOrder {
     this.fetchedGloves = null
   }
 
+
+  //calculate the total shipping cost
   calculateshipping() {
     const totalMaskOrderQtybase10 = Math.round(this.maskOrder / 10)
     const totalGloveOrderQtybase10 = Math.round(this.gloveOrder / 10)
@@ -64,7 +69,7 @@ class CreateOrder {
       // console.log(this.shippingCost)
 
     } else if (this.purchaserCountry === 'UK' || this.purchaserCountry === 'Germany') {
-      console.log(totalMaskOrderQtybase10, totalGloveOrderQtybase10)
+      // console.log(totalMaskOrderQtybase10, totalGloveOrderQtybase10)
       this.shippingCost = (320 * totalMaskOrderQtybase10) + (320 * totalGloveOrderQtybase10)
       // console.log(this.shippingCost)
 
@@ -73,10 +78,11 @@ class CreateOrder {
 
     }
 
-    console.log('the total shipping cost is ', this.shippingCost)
+    console.log('the total shipping cost is £' + this.shippingCost)
 
   }
 
+  //calculate total-cost=sale-price+shipping
   calculatesalePrice() {
 
     const lowestMaskPrice = Math.min(UKWareHouse.mask.price, germanWarehouse.mask.price)
@@ -84,48 +90,47 @@ class CreateOrder {
 
 
     //these two are pointer to the orginal data
-    let lowestPriceMaskStock
-    let lowestPriceGloveStock
+    let lowestPriceMaskWarehouse
+    let lowestPriceGloveWarehouse
     let BackupWareHouseForMask
     let BackupWareHouseForGlove
 
-
+    //allocating warehouses for orders
     if (lowestMaskPrice === maskUKprice) {
-      lowestPriceMaskStock = UKWareHouse
+      lowestPriceMaskWarehouse = UKWareHouse
       BackupWareHouseForMask = germanWarehouse
     } else {
-      lowestPriceMaskStock = germanWarehouse
+      lowestPriceMaskWarehouse = germanWarehouse
       BackupWareHouseForMask = UKWareHouse
     }
 
     if (lowestGlovePrice === gloveUKprice) {
-      lowestPriceGloveStock = UKWareHouse
+      lowestPriceGloveWarehouse = UKWareHouse
       BackupWareHouseForGlove = germanWarehouse
     } else {
-      lowestPriceGloveStock = germanWarehouse
+      lowestPriceGloveWarehouse = germanWarehouse
       BackupWareHouseForGlove = UKWareHouse
     }
-    // console.log('lowest price for glove is ', lowestGlovePrice, ' and has a quantity of ', lowestPriceGloveStock)
-    // console.log('lowest price for mask is ', lowestMaskPrice, ' and has a quantity of ', lowestPriceMaskStock)
+    // console.log('lowest price for glove is ', lowestGlovePrice, ' and has a quantity of ', lowestPriceGloveWarehouse)
+    // console.log('lowest price for mask is ', lowestMaskPrice, ' and has a quantity of ', lowestPriceMaskWarehouse)
     this.totalAmount = (lowestGlovePrice * this.gloveOrder) + (lowestMaskPrice * this.maskOrder)
+    this.totalAmount = this.totalAmount + this.shippingCost //add shipping
 
 
     //check if the lowest price item warehouse can meet the order requirement
-    // console.log(lowestPriceGloveStock.glove.qty, this.gloveOrder)
-    if (lowestPriceMaskStock.mask.qty >= this.maskOrder && lowestPriceGloveStock.glove.qty >= this.gloveOrder) {
+    if (lowestPriceMaskWarehouse.mask.qty >= this.maskOrder && lowestPriceGloveWarehouse.glove.qty >= this.gloveOrder) {
       this.totalAmount = (lowestGlovePrice * this.gloveOrder) + (lowestMaskPrice * this.maskOrder)
-      lowestPriceMaskStock.mask.qty = lowestPriceMaskStock.mask.qty - this.maskOrder
-      lowestPriceGloveStock.glove.qty = lowestPriceGloveStock.glove.qty - this.gloveOrder
-      console.log(lowestPriceMaskStock.mask.qty, lowestPriceGloveStock.glove.qty)
-      // console.log(lowestPriceMaskStock, lowestPriceGloveStock)
-      this.totalAmount = this.totalAmount + this.shippingCost
-      // console.log('total amount is ', this.totalAmount)
+
+      lowestPriceMaskWarehouse.mask.qty = lowestPriceMaskWarehouse.mask.qty - this.maskOrder
+      lowestPriceGloveWarehouse.glove.qty = lowestPriceGloveWarehouse.glove.qty - this.gloveOrder
+
       this.printOrder(this.totalAmount, UKWareHouse.mask.qty, germanWarehouse.mask.qty, UKWareHouse.glove.qty, germanWarehouse.glove.qty)
+
     } else {
       //if we need to fetch data from other warehouse
       //fetch from other warehouse
-      if (this.maskOrder > lowestPriceMaskStock.mask.qty) this.fetchedMask = this.maskOrder - lowestPriceMaskStock.mask.qty
-      if (this.gloveOrder > lowestPriceGloveStock.glove.qty) this.fetchedGloves = this.gloveOrder - lowestPriceGloveStock.glove.qty
+      if (this.maskOrder > lowestPriceMaskWarehouse.mask.qty) this.fetchedMask = this.maskOrder - lowestPriceMaskWarehouse.mask.qty
+      if (this.gloveOrder > lowestPriceGloveWarehouse.glove.qty) this.fetchedGloves = this.gloveOrder - lowestPriceGloveWarehouse.glove.qty
 
 
       // console.log(this.fetchedMask, this.fetchedGloves)
@@ -137,20 +142,21 @@ class CreateOrder {
 
       this.totalAmount = this.totalAmount + fetchedGloveAmount + fetchedMaskAmount
 
-      //update stock
+      //update stock in the Backup warehouse if item was fetched
+      //if item was fetched from backup warehouse it means org warehouse Qty=0
       if (this.fetchedGloves) {
-        lowestPriceGloveStock.glove.qty = 0
+        lowestPriceGloveWarehouse.glove.qty = 0
         BackupWareHouseForGlove.glove.qty = BackupWareHouseForGlove.glove.qty - this.fetchedGloves
       }
-      if (this.fetchedMask || !feth) {
-        lowestPriceMaskStock.mask.qty = 0
+      if (this.fetchedMask) {
+        lowestPriceMaskWarehouse.mask.qty = 0
         BackupWareHouseForMask.mask.qty = BackupWareHouseForMask.mask.qty - this.fetchedMask
       }
 
 
-      //if nothing was fetched from the outside warehouse subtract from original warehouse
-      if (!fetchedMaskAmount) lowestPriceMaskStock.mask.qty = lowestPriceMaskStock.mask.qty - this.maskOrder
-      if (!fetchedGloveAmount) lowestPriceGloveStock.glove.qty = lowestPriceGloveStock.glove.qty = this.gloveOrder
+      //if nothing was fetched from the Backup warehouse subtract from original warehouse
+      if (!fetchedMaskAmount) lowestPriceMaskWarehouse.mask.qty = lowestPriceMaskWarehouse.mask.qty - this.maskOrder
+      if (!fetchedGloveAmount) lowestPriceGloveWarehouse.glove.qty = lowestPriceGloveWarehouse.glove.qty = this.gloveOrder
 
 
 
@@ -165,6 +171,7 @@ class CreateOrder {
 
 
   //before anything we check if we do have the required nos
+  //if order > warehouse Qty display OUT OF STOCK
   checkInventory() {
     if (this.maskOrder > this.maskInvent || this.gloveOrder > this.glovesInvt) {
       return this.printOrder('OUT_OF_STOCK', maskUK, maskGB, gloveUk, gloveGB)
@@ -173,7 +180,7 @@ class CreateOrder {
 
   }
 
-
+  //display result to the user
   printOrder(salePrice, maskUKInvt, maskGBInt, gloveUKInt, gloveGBInvt) {
     console.log(`${salePrice}:${maskUKInvt}:${maskGBInt} ${gloveUKInt}:${gloveGBInvt}`)
   }
