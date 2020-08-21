@@ -9,10 +9,10 @@ https://nodejs.org/en/download/
 
 ### to run the app
 
-go to your terminal and command line and type
+go to your terminal(Linux/UNIX) or command line(windows) and type
 
 ```
-$node index.js command
+$ node index.js command
 ```
 
 NOTE- **command** is a placeholder. dont type command as is
@@ -34,7 +34,7 @@ eg-
 `UK:B123AB1234567:Gloves:120:Mask:10`
 `Germany:AAB123456789:Mask:50:Gloves:25`
 
-NOTE-if command not entered in proper format the program will not work. The commands are also case sensitive. For united kingdom use 'UK' and for germany use 'Germany'
+**NOTE-if command not entered in proper format the program will not work. The commands are also case sensitive. For united kingdom use 'UK' and for germany use 'Germany'**
 
 ---
 
