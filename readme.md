@@ -1,5 +1,7 @@
 # Inventory manager manual v1.0
 
+>This project was built for an interview process
+
 ### requirements
 
 To run the app you require Node to be installed in your machine
